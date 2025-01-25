@@ -11,15 +11,17 @@ def _listen_chat_action():
     if dragonGateSpider.isrun:
         dragonGateSpider.log("收到监听请求，开始监听聊天记录", dragonGateSpider.INFO)
         say_in_english("listening request received")
-        dragonGate_window = dragonGateSpider.wechat_window.child_window(title="龙门☭九常", control_type="ListItem")
+        dragonGate_window = dragonGateSpider.wechat_window.child_window(title="拉比林斯迷宫", control_type="ListItem")
         early_text = []
         while True:
-            for i in dragonGate_window.wrapper_object().descendants():
-                if i.friendly_class_name() == "Static" and "龙门☭九常" not in i.window_text():
+            try:
+                for i in dragonGate_window.wrapper_object().descendants():
                     if i.window_text() not in early_text:
-                        dragonGateSpider.log(i.window_text().replace("@", "[艾特]"))
+                        dragonGateSpider.log(i.window_text())
                         early_text.append(i.window_text())
-            time.sleep(0.5)
+                time.sleep(0.5)
+            except Exception as e:
+                dragonGateSpider.log(f"{e.__class__.__name__}: {str(e)}", dragonGateSpider.ERROR)
     else:
         dragonGateSpider.log("请先登录", dragonGateSpider.WARNING)
         say_in_english("please login")

@@ -59,11 +59,11 @@ class DragonGateSpider(QMainWindow):
             os.mkdir("logs")
 
         if logfile_:
-            self.logfile = open("logs/%s.log"%time.strftime(r"%Y-%m-%d-%H.%M.%S"), "a")
+            self.logfile = open("logs/%s.log"%time.strftime(r"%Y-%m-%d-%H.%M.%S"), "a", encoding="utf-8")
             self.logfile.write(time.strftime(r"%Y-%m-%d") + "的运行日志\n\n")
             self.logfile.flush()
 
-            logging.basicConfig(filename="logs/%s.log"%time.strftime(r"%Y-%m-%d-%H.%M.%S"), level=logging.INFO, format="[%(asctime)s] [%(levelname)s]: %(message)s")
+            logging.basicConfig(filename="logs/%s.log"%time.strftime(r"%Y-%m-%d-%H.%M.%S"), level=logging.INFO, format="[%(asctime)s] [%(levelname)s]: %(message)s", encoding="utf-8")
 
         self.log("欢迎，龙门主席，请登录您的账号", self.INFO)
 
