@@ -1,8 +1,5 @@
-import pywinauto
-import time
 from libs.windows.DragonGateSpider import *
-from PyQt6.QtGui import *
-from PyQt6.QtCore import *
+from libs.functions import *
 
 def exit_app(title, text):
    QMessageBox.information(dragonGateSpider, title, text)
