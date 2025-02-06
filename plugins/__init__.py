@@ -13,11 +13,13 @@ for i in glob.glob("plugins/*.py"):
     plugin_file_name = i.replace("\\", ".").replace(".py", "")
     if "__init__" not in plugin_file_name:
         plugin = importlib.import_module(plugin_file_name)
+        dragonGateSpider.log(f"载入插件: {plugin.__name__}", dragonGateSpider.INFO)
         plugins[plugin_file_name.replace("plugins.", "")] = plugin
 
 disabled_plugins = []
 for i in glob.glob("plugins/*.disabled"):
     plugin_file_name = i.replace("plugins\\", "").replace(".disabled", "")
+    dragonGateSpider.log(f"禁用的插件: {plugin_file_name}", dragonGateSpider.INFO)
     disabled_plugins.append(plugin_file_name)
 
 def enable():
@@ -78,4 +80,4 @@ else:
 
         disabled_plugins_menu.addAction(disabled_plugins_menu_action)
 
-dragonGateSpider.log("%d 个插件已载入"%len(plugins), dragonGateSpider.INFO)
+dragonGateSpider.log(f"{str(len(plugins))} 个插件已载入，{str(len(disabled_plugins))} 个插件已被禁用", dragonGateSpider.INFO)
