@@ -3,15 +3,14 @@
 """
 import logging
 import time
-import sys
 import os
+import sys
 import pyautogui
 import configparser
 import json
 import traceback
 
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import *
+from libs.signals import *
 from libs.gui.ui_DragonGateSpider import Ui_DragonGateSpider
 from libs.engines import *
 
@@ -46,18 +45,9 @@ def add_to_threads(thread: QThread):
         return
     thread.finished.connect(lambda: threads.remove(thread))
     thread.finished.connect(thread.deleteLater)
+    thread.finished.connect(lambda: dragonGateSpider.log(f"Thread end: {str(thread)}", dragonGateSpider.DEBUG))
     threads.append(thread)
     thread.start()
-    """DEBUG
-    dragonGateSpider.log("", dragonGateSpider.DEBUG)
-    dragonGateSpider.log(f"Threads: {str(threads)}", dragonGateSpider.DEBUG)
-    dragonGateSpider.log(f"Length: {str(len(threads))}", dragonGateSpider.DEBUG)
-    for i in threads:
-        dragonGateSpider.log(f"Current Thread: {str(i)}", dragonGateSpider.DEBUG)
-        dragonGateSpider.log(f"Index: {str(threads.index(i))}", dragonGateSpider.DEBUG)
-        dragonGateSpider.log(f"Is Running: {str(i.isRunning())}", dragonGateSpider.DEBUG)
-    dragonGateSpider.log("", dragonGateSpider.DEBUG)
-    """
 
 def say_in_english(word):
     if not voicelog:
@@ -82,6 +72,9 @@ class DragonGateSpider(QMainWindow):
         self.ERROR = "ERROR"
         self.DEBUG = "DEBUG"
 
+        self.log_signals = LogSignals() # 该死的多线程，我现在用信号总行了吧
+        self.log_signals.log_message.connect(self._log)
+
         if not os.path.exists("logs"):
             os.mkdir("logs")
 
@@ -98,8 +91,8 @@ class DragonGateSpider(QMainWindow):
         self.ui.login_button.clicked.connect(self.on_login_button_clicked)
         self.isrun = False
 
-    def log(self, text, level="NORMAL"):
-        """日志器，负责写入日志"""
+    def _log(self, text, level):
+        """日志器"""
         if level == self.NORMAL:
             self.ui.logger.append("<font color='white'>%s</font>"%text)
             if logfile:
@@ -126,6 +119,10 @@ class DragonGateSpider(QMainWindow):
             self.ui.logger.append("<font color='white'>[%s] [%s]: %s</font>"%(time.strftime(r"%Y-%m-%d %H:%M:%S"), level, text))
             if logfile:
                 logging.info(text)
+
+    def log(self, text, level="NORMAL"):
+        """写入日志"""
+        self.log_signals.log_message.emit(text, level)
 
     def print_error(self, e: Exception):
         """错误处理器，负责打印错误"""
