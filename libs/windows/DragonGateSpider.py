@@ -8,7 +8,6 @@ import sys
 import pyautogui
 import configparser
 import json
-import traceback
 
 from libs.signals import *
 from libs.gui.ui_DragonGateSpider import Ui_DragonGateSpider
@@ -70,6 +69,7 @@ class DragonGateSpider(QMainWindow):
         self.INFO = "INFO"
         self.WARNING = "WARNING"
         self.ERROR = "ERROR"
+        self.EXCEPTION = "EXCEPTION"
         self.DEBUG = "DEBUG"
 
         self.log_signals = LogSignals() # 该死的多线程，我现在用信号总行了吧
@@ -112,6 +112,10 @@ class DragonGateSpider(QMainWindow):
             self.ui.logger.append("<font color='red'>[%s] [%s]: %s</font>"%(time.strftime(r"%Y-%m-%d %H:%M:%S"), level, text))
             if logfile:
                 logging.error(text)
+        elif level == self.EXCEPTION:
+            self.ui.logger.append("<font color='red'>[%s] [%s]: %s</font>"%(time.strftime(r"%Y-%m-%d %H:%M:%S"), self.ERROR, text))
+            if logfile:
+                logging.exception(text)
         elif level == self.DEBUG:
             if logfile:
                 logging.debug(text)
@@ -126,7 +130,11 @@ class DragonGateSpider(QMainWindow):
 
     def print_error(self, e: Exception):
         """错误处理器，负责打印错误"""
-        self.log(f"运行时发生错误\n{"".join(traceback.format_tb(e.__traceback__))}\n{e.__class__.__name__}: {str(e)}", self.ERROR)
+        self.log(str(e), self.ERROR)
+        if logfile:
+            self.log("运行时发生错误，详细信息已被写入日志", self.EXCEPTION)
+        else:
+            self.log("日志文件已在配置中被关闭，详细信息无法被写入日志", self.WARNING)
 
     def on_login_button_clicked(self):
         self.isrun = True

@@ -7,7 +7,7 @@ import sys
 
 __name__ = "调试器"
 __author__ = "龙门主席"
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 
 debug_menu = QMenu("调试选项", dragonGateSpider.ui.functions_menu)
 dragonGateSpider.ui.functions_menu.addMenu(debug_menu)
@@ -52,8 +52,23 @@ def print_control_identifiers(window):
     dragonGateSpider.log(f"输出窗口句柄{str(window)}\n{captured_output.getvalue()}", dragonGateSpider.DEBUG)
     sys.stdout = original_stdout
 
-# 调试窗口句柄
+# 调试所有窗口句柄
 def _debug_get_hwnd_action():
+    if dragonGateSpider.isrun:
+        try:
+            print_control_identifiers(dragonGateSpider.wechat_window)
+        except Exception as e:
+            dragonGateSpider.print_error(e)
+    else:
+        dragonGateSpider.log("请先登录", dragonGateSpider.WARNING)
+        say_in_english("please login")
+
+debug_get_hwnd_action = QAction("调试所有窗口句柄", debug_menu)
+debug_get_hwnd_action.triggered.connect(_debug_get_hwnd_action)
+debug_menu.addAction(debug_get_hwnd_action)
+
+# 调试控制器窗口句柄
+def _debug_get_controller_hwnd_action():
     if dragonGateSpider.isrun:
         try:
             print_control_identifiers(dragonGateSpider.wechat_window.child_window(title=controller, control_type="ListItem"))
@@ -66,9 +81,9 @@ def _debug_get_hwnd_action():
         dragonGateSpider.log("请先登录", dragonGateSpider.WARNING)
         say_in_english("please login")
 
-debug_get_hwnd_action = QAction("调试窗口句柄", debug_menu)
-debug_get_hwnd_action.triggered.connect(_debug_get_hwnd_action)
-debug_menu.addAction(debug_get_hwnd_action)
+debug_get_controller_hwnd_action = QAction("调试控制器窗口句柄", debug_menu)
+debug_get_controller_hwnd_action.triggered.connect(_debug_get_controller_hwnd_action)
+debug_menu.addAction(debug_get_controller_hwnd_action)
 
 # 调试选择窗口
 def _debug_select_window_action():
