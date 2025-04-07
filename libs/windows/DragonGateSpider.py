@@ -63,7 +63,7 @@ class DragonGateSpider(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowMaximizeButtonHint)
         self.setFixedSize(self.size())
-        self.setWindowTitle("龙门爬虫 v1.1.2")
+        self.setWindowTitle("龙门爬虫 v1.1.3")
 
         self.NORMAL = "NORMAL"
         self.INFO = "INFO"
